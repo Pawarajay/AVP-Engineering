@@ -22,6 +22,7 @@ const Navigation = () => {
     { name: "Fishnets", href: "#fishnets" },
     { name: "Custom Solutions", href: "#custom" },
     { name: "Contact", href: "#contact" },
+     { name: "Product Gallery", href: "#product-gallery" }
   ];
 
   const scrollToSection = (href: string) => {
