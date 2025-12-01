@@ -434,7 +434,7 @@ const ProductsDetailed = () => {
         <Card className="mt-16 bg-gradient-hero text-white animate-fade-in">
           <CardContent className="p-12 text-center">
             <h3 className="text-3xl font-heading font-bold mb-4">
-              Ready to Export with AVP Engineers?
+              Ready to Export with AP Engineers?
             </h3>
             <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
               Join hundreds of satisfied international clients. Get competitive pricing, reliable quality, and expert export support.
