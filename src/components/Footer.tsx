@@ -29,11 +29,12 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-secondary-light" />
-                <span className="text-sm">+91-XXXX-XXXXXX</span>
+                <span className="text-sm">+91-9926202282 / +91-8830101938</span>
+                {/* <span className="text-sm">+91-8830101938</span> */}
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-secondary-light" />
-                <span className="text-sm">info@apengineers.com</span>
+                <span className="text-sm">apenginerring83@gmail.com</span>
               </div>
             </div>
           </div>

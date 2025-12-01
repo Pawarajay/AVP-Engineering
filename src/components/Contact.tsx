@@ -34,12 +34,12 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Phone",
-      details: ["+91-XXXX-XXXXXX", "WhatsApp Available"],
+      details: ["+91-9926202282 / +91-8830101938", "WhatsApp Available"],
     },
     {
       icon: Mail,
       title: "Email",
-      details: ["info@apengineers.com", "export@apengineers.com"],
+      details: ["apenginerring83@gmail.com", "export@apengineers.com"],
     },
   ];
 
