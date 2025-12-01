@@ -282,10 +282,6 @@ const Navigation = () => {
   const navLinks = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
-    { name: "Machinery", href: "#machinery" },
-    { name: "Spare Parts", href: "#spare-parts" },
-    { name: "Fishnets", href: "#fishnets" },
-    { name: "Custom Solutions", href: "#custom" },
     { name: "Contact", href: "#contact" },
     { name: "Product Gallery", href: "#product-gallery" }
   ];
