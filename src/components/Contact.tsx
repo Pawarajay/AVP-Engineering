@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Contact = () => {
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,12 +14,9 @@ const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
+    alert("Message Sent! We'll get back to you within 24 hours.");
     setFormData({ name: "", email: "", phone: "", company: "", message: "" });
   };
 
@@ -44,32 +39,32 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      details: ["info@avpengineers.com", "export@avpengineers.com"],
+      details: ["info@apengineers.com", "export@apengineers.com"],
     },
   ];
 
   return (
-    <section id="contact" className="py-20 bg-muted">
+    <section id="contact" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-primary">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-blue-600">
             Get in Touch
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Ready to discuss your requirements? Contact us for quotes, inquiries, or custom solutions
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card className="animate-slide-in-right">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-heading text-primary">
+              <CardTitle className="text-2xl text-blue-600">
                 Request a Quote
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <Input
                     placeholder="Your Name *"
@@ -117,34 +112,33 @@ const Contact = () => {
                   required
                 />
                 <Button
-                  type="submit"
+                  onClick={handleSubmit}
                   size="lg"
-                  className="w-full bg-accent hover:bg-accent/90"
+                  className="w-full bg-orange-500 text-white"
                 >
                   Send Message <Send className="ml-2 h-5 w-5" />
                 </Button>
-              </form>
+              </div>
             </CardContent>
           </Card>
 
           {/* Contact Information */}
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-6">
             {contactInfo.map((info, index) => (
               <Card
                 key={index}
-                className="hover:shadow-lg transition-smooth"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="hover:shadow-lg transition-shadow"
               >
                 <CardContent className="p-6 flex items-start space-x-4">
-                  <div className="bg-secondary/10 p-3 rounded-lg">
-                    <info.icon className="h-6 w-6 text-secondary" />
+                  <div className="bg-orange-100 p-3 rounded-lg">
+                    <info.icon className="h-6 w-6 text-orange-500" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-lg mb-2 text-primary">
+                    <h3 className="font-semibold text-lg mb-2 text-blue-600">
                       {info.title}
                     </h3>
                     {info.details.map((detail, idx) => (
-                      <p key={idx} className="text-muted-foreground">
+                      <p key={idx} className="text-gray-600">
                         {detail}
                       </p>
                     ))}
@@ -153,9 +147,9 @@ const Contact = () => {
               </Card>
             ))}
 
-            <Card className="bg-primary text-white">
+            <Card className="bg-blue-600 text-white">
               <CardContent className="p-6">
-                <h3 className="font-heading font-semibold text-xl mb-4">
+                <h3 className="font-semibold text-xl mb-4">
                   Export Inquiries Welcome
                 </h3>
                 <p className="mb-4">
@@ -163,7 +157,7 @@ const Contact = () => {
                 </p>
                 <Button
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-primary"
+                  className="border-white text-white bg-transparent"
                 >
                   Learn More About Exports
                 </Button>

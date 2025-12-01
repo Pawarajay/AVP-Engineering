@@ -30,7 +30,7 @@ const About = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-primary">
-            About AVP Engineers
+            About AP Engineers
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Leading the industry in fishnet machinery manufacturing with innovation, quality, and global reach
@@ -43,7 +43,7 @@ const About = () => {
               Our Legacy of Excellence
             </h3>
             <p className="text-lg text-foreground/80 mb-4">
-              Under the leadership of <strong>Mr. Pradip Barge</strong>, AVP Engineers has established itself as a trusted name in the fishnet machinery industry. With our headquarters in Satara and a modern manufacturing facility at Kudal MIDC, we combine traditional craftsmanship with cutting-edge technology.
+              Under the leadership of <strong>Mr. Pradip Barge</strong>, AP Engineers has established itself as a trusted name in the fishnet machinery industry. With our headquarters in Satara and a modern manufacturing facility at Kudal MIDC, we combine traditional craftsmanship with cutting-edge technology.
             </p>
             <p className="text-lg text-foreground/80 mb-4">
               Our commitment to quality, innovation, and customer satisfaction has enabled us to expand our reach globally, serving clients across the Middle East, Africa, Southeast Asia, and Europe.

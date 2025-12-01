@@ -8,7 +8,7 @@ const WhatsAppButton = () => {
   // WhatsApp business number - update with actual number
   const whatsappNumber = "919876543210"; // Format: country code + number (no + or spaces)
   const defaultMessage = encodeURIComponent(
-    "Hello AVP Engineers! I'm interested in learning more about your fishnet machinery and export solutions."
+    "Hello AP Engineers! I'm interested in learning more about your fishnet machinery and export solutions."
   );
 
   const handleWhatsAppClick = () => {
