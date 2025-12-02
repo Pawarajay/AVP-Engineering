@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Search,
@@ -196,11 +197,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
   useEffect(() => {
     const videoId = getYouTubeVideoId(url);
     if (videoId) {
-      // Set initial embed URL (without autoplay for thumbnail)
       const embed = new URL(`https://www.youtube.com/embed/${videoId}`);
       embed.searchParams.set('rel', '0');
       embed.searchParams.set('modestbranding', '1');
-      embed.searchParams.set('controls', '0'); // Hide YouTube's native controls
+      embed.searchParams.set('enablejsapi', '1');
+      embed.searchParams.set('origin', window.location.origin);
       setEmbedUrl(embed.toString());
     }
   }, [url]);
@@ -208,8 +209,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
   const handleWatchClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    
-    // Create embed URL with autoplay
+
     const videoId = getYouTubeVideoId(url);
     if (videoId) {
       const playableUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
@@ -217,7 +217,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
       playableUrl.searchParams.set('mute', '0');
       playableUrl.searchParams.set('rel', '0');
       playableUrl.searchParams.set('modestbranding', '1');
-      playableUrl.searchParams.set('controls', '0'); // Hide YouTube's native controls
+      playableUrl.searchParams.set('enablejsapi', '1');
+      playableUrl.searchParams.set('origin', window.location.origin);
       setEmbedUrl(playableUrl.toString());
       setIsPlaying(true);
       setIsPaused(false);
@@ -228,37 +229,68 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
   const handlePauseResume = () => {
     if (iframeRef.current) {
       const iframe = iframeRef.current;
-      const iframeWindow = iframe.contentWindow;
-      
-      if (iframeWindow) {
-        // Toggle pause/play by posting message to iframe
+
+      try {
+        const message = isPaused
+          ? JSON.stringify({ event: 'command', func: 'playVideo', args: '' })
+          : JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' });
+
+        iframe.contentWindow?.postMessage(message, '*');
+        setIsPaused(!isPaused);
+      } catch (error) {
+        console.error('Error controlling video:', error);
+
+        const videoId = getYouTubeVideoId(url);
+        if (!videoId) return;
+
+        const newUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+        newUrl.searchParams.set('rel', '0');
+        newUrl.searchParams.set('modestbranding', '1');
+        newUrl.searchParams.set('enablejsapi', '1');
+        newUrl.searchParams.set('origin', window.location.origin);
+
         if (isPaused) {
-          // Resume video
-          iframeWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+          newUrl.searchParams.set('autoplay', '1');
+          newUrl.searchParams.set('mute', '0');
           setIsPaused(false);
         } else {
-          // Pause video
-          iframeWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          newUrl.searchParams.set('autoplay', '0');
+          newUrl.searchParams.set('mute', '0');
           setIsPaused(true);
         }
+
+        setEmbedUrl(newUrl.toString());
       }
     }
   };
 
   const handleExitVideo = () => {
+    if (iframeRef.current) {
+      try {
+        const message = JSON.stringify({ event: 'command', func: 'stopVideo', args: '' });
+        iframeRef.current.contentWindow?.postMessage(message, '*');
+      } catch (error) {
+        console.error('Error stopping video:', error);
+      }
+    }
+
     setIsPlaying(false);
     setIsPaused(false);
     setShowControls(false);
-    
-    // Reset to thumbnail view URL
+
     const videoId = getYouTubeVideoId(url);
     if (videoId) {
       const embed = new URL(`https://www.youtube.com/embed/${videoId}`);
       embed.searchParams.set('rel', '0');
       embed.searchParams.set('modestbranding', '1');
-      embed.searchParams.set('controls', '0');
+      embed.searchParams.set('enablejsapi', '1');
+      embed.searchParams.set('origin', window.location.origin);
       setEmbedUrl(embed.toString());
     }
+  };
+
+  const handleIframeLoad = () => {
+    console.log('Iframe loaded, YouTube API should be available');
   };
 
   const getThumb = (videoUrl: string) => {
@@ -292,7 +324,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
           <div className="w-full h-full bg-white rounded-3xl" />
         </div>
         <div className="relative z-10 flex flex-col h-full">
-          <div 
+          <div
             className="relative w-full aspect-video overflow-hidden bg-black"
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => {
@@ -313,28 +345,26 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   style={{ display: 'block' }}
-                  allow="autoplay"
+                  onLoad={handleIframeLoad}
+                  id={`youtube-player-${idx}`}
                 />
-                
-                {/* Custom Video Controls Overlay */}
+
                 {showControls && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
-                    {/* Top Control Bar */}
                     <div className="absolute top-0 left-0 right-0 p-3 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent">
                       <div className="flex items-center gap-1 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
                         <Sparkles className="w-3 h-3 text-yellow-300" />
                         <span className="text-xs font-semibold text-white">Now Playing</span>
                       </div>
-                      
+
                       <div className="flex gap-2">
-                        {/* Pause/Resume Button */}
                         <button
                           className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/30 transition-all duration-300 hover:scale-110"
                           onClick={(e) => {
                             e.stopPropagation();
                             handlePauseResume();
                           }}
-                          title={isPaused ? "Resume video" : "Pause video"}
+                          title={isPaused ? 'Resume video' : 'Pause video'}
                         >
                           {isPaused ? (
                             <PlayCircle className="w-4 h-4 text-white" />
@@ -342,8 +372,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                             <Pause className="w-4 h-4 text-white" />
                           )}
                         </button>
-                        
-                        {/* Exit Video Button */}
+
                         <button
                           className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-500/80 transition-all duration-300 hover:scale-110"
                           onClick={(e) => {
@@ -356,8 +385,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                         </button>
                       </div>
                     </div>
-                    
-                    {/* Bottom Control Bar */}
+
                     <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col gap-2 bg-gradient-to-t from-black/60 to-transparent">
                       <div className="flex justify-center gap-3">
                         <button
@@ -379,7 +407,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                             </>
                           )}
                         </button>
-                        
+
                         <button
                           className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2"
                           onClick={(e) => {
@@ -391,16 +419,15 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                           Exit Video
                         </button>
                       </div>
-                      
+
                       <div className="text-center">
                         <p className="text-white/80 text-sm">
-                          {isPaused ? "Video paused" : "Video playing"} • Click buttons to control
+                          {isPaused ? 'Video paused' : 'Video playing'} • Click buttons to control
                         </p>
                       </div>
                     </div>
-                    
-                    {/* Middle Click Area */}
-                    <div 
+
+                    <div
                       className="absolute inset-0 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -408,7 +435,11 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                       }}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className={`transform transition-all duration-300 ${showControls ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}>
+                        <div
+                          className={`transform transition-all duration-300 ${
+                            showControls ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+                          }`}
+                        >
                           {isPaused ? (
                             <div className="relative">
                               <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>
@@ -425,10 +456,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                     </div>
                   </div>
                 )}
-                
-                {/* Exit overlay when controls are hidden but video is playing */}
+
                 {!showControls && isPlaying && (
-                  <div 
+                  <div
                     className="absolute inset-0 cursor-pointer"
                     onClick={() => setShowControls(true)}
                   >
@@ -449,7 +479,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
                     isHovered ? 'scale-105 brightness-105' : 'scale-100 brightness-100'
                   }`}
                   onError={(e) => {
-                    // Fallback to lower quality thumbnail
                     const videoId = getYouTubeVideoId(url);
                     if (videoId) {
                       e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -481,7 +510,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ url, description, idx }) => {
               </div>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             {!isPlaying && (
               <div
                 className={`absolute top-3 left-3 flex items-center gap-1 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg transition-all duration-500 ${
